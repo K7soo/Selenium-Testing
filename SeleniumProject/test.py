@@ -1,24 +1,96 @@
-# INSTRUCTIONS #
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
+import time
+import pandas as pd
 
-# CONFIG #
-# 1) pip install selenium -- installation of selenium
-# 2) GO TO chromedriver and install win64 vers
-# 3) install chromedriver -- https://sites.google.com/chromium.org/driver/ -- link
-# 4) extract chromedriver in folder (selenium project folder)
-# 5) get chromedriver.exe and place in same directory as main test file (main.py)
+# LINK TO WEBDRIVER -- SOFTWARE #
+# https://sites.google.com/chromium.org/driver/ 
 
-# CODE #
-# 1) install dependencies and libraries (import libs)
-    # import selenium libs
-    # import pandas libs
-# 2) set variables for chromedriver
-    # service = Service(executable_path="chromedriver.exe") 
-    # driver = webdriver.Chrome(service=service)
-# 3) write whole test script simulation
-    # Open browser
-    # Open website
-    # Sign In
-    # Login to acc
-    # Find selenium tab
-    # Scrape table data
-# 4) run code (python main.py)
+# OPEN GOOGLE CHROME #
+service = Service(executable_path="chromedriver.exe")   # PATH
+driver = webdriver.Chrome(service=service)              # DRIVER VAR
+driver.maximize_window()
+driver.get("https://google.com")
+# VARIABLES #
+method_list = []
+description_list = []
+
+# FUNCTIONS
+def button_click():
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Sign In')]")))
+    button_element = driver.find_element(By.XPATH, "//a[contains(text(), 'Sign In')]")
+    button_element.click()
+
+# def driver_wait_function(method, test)
+
+# GO TO SEARCH BAR #
+WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.CLASS_NAME, "gLFyf"))
+)
+input_variable = driver.find_element(By.CLASS_NAME, "gLFyf").send_keys("Web Scraping", Keys.ENTER)
+
+# SEARCH #
+WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "What is Web Scraping and How to Use It?"))
+)
+# FIND THE NEAREST STRING RELATED TO SEARCH
+link = driver.find_element(By.PARTIAL_LINK_TEXT, "What is Web Scraping and How to Use It?").click()
+
+button_click() # FIND SIGN IN BUTTON
+
+# SIGN IN #
+WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.ID, "luser"))
+)
+username_input = driver.find_element(By.ID, "luser").send_keys("kcdominb6fu")
+WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.ID, "password"))
+)
+password_input = driver.find_element(By.ID, "password").send_keys("SirEst0ngPog1!")
+button_element = driver.find_element(By.XPATH, "//*[@id='Login']/button").click()
+
+# FIND SELENIUM TAB #
+for attempt in range(3):
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[@id='hslider']/li[2]/a"))
+        ).click()
+        break
+    except StaleElementReferenceException:
+        print("Retrying to find and click the Selenium tab due to stale element.")
+
+# SCRAPE THE PAGE #
+WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.XPATH, "//*[@id='post-427949']/div[3]/table[1]"))
+)
+table = driver.find_element(By.XPATH, "//*[@id='post-427949']/div[3]/table[1]")
+
+# ROW SCRAPE
+rows = table.find_elements(By.TAG_NAME, "tr")
+for row in rows[1:]:  # Skip the header row
+    columns = row.find_elements(By.TAG_NAME, "td")
+    if len(columns) == 2:  
+        method = columns[0].text
+        description = columns[1].text
+        method_list.append(method)
+        description_list.append(description)
+
+# DATA FRAME CREATION #
+data_frame = pd.DataFrame({
+    "Method": method_list,
+    "Description": description_list
+})
+
+# DISPLAY THE DATA #
+print(data_frame)
+
+# INACTIVE TIME BEFORE SLEEP AND QUIT OF TEST #
+time.sleep(5)
+driver.quit()
+
+# END OF SCRIPT #
