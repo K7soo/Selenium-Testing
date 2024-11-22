@@ -8,7 +8,7 @@ INSTRUCTIONS
 3) install chromedriver 
     # https://sites.google.com/chromium.org/driver/ -- link
 4) extract chromedriver in folder (selenium project folder)
-5) get chromedriver.exe and place in same directory as main test file (main.py)
+5) get chromedriver.exe and place in same directory as main test file (main.py OR any other name)
 
 # CODE #
 1) install dependencies and libraries (import libs)

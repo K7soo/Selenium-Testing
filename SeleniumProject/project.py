@@ -8,20 +8,19 @@ from selenium.common.exceptions import StaleElementReferenceException
 import time, pandas as pd
 
 # VARIABLES #
-service = Service(executable_path="chromedriver.exe")   # PATH
-driver = webdriver.Chrome(service=service)              # DRIVER VAR
+service = Service(executable_path="chromedriver.exe")   # SET CHRM DRVR FILE AS SERVICE
+driver = webdriver.Chrome(service=service)              # SET SERVICE VARIABLE TO DRIVER
 driver.maximize_window()                                # MAX WINDOW
 driver.get("https://google.com")                        # OPENS GOOGLE URL ON BOOT
 method_list = []        
 description_list = []                 
 
 # FUNCTIONS
-    # LOAD ELEMENT
 def driver_wait_function(method, tag, type):
-    if type == 1:
+    if type == 1:   # WAIT UNTIL ELEMENT IS CLICKABLE BY DRIVER
         element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((method, tag)))
         return element
-    if type == 2:
+    if type == 2:   # WAIT UNTIL ELEMENT IS SEEN/LOCATED BY DRIVER
         element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((method, tag)))
         return element
     
@@ -36,6 +35,8 @@ def format_table(format):
             method_list.append(method)
             description_list.append(description)
     return format
+
+# TEST SCRIPT (LIKE MABL) #
 
 # GO TO SEARCH BAR #
 driver_wait_function(By.CLASS_NAME, "gLFyf", 2)
@@ -63,7 +64,8 @@ for attempt in range(3):
     except StaleElementReferenceException:
         print("Retrying to find and click the Selenium tab due to stale element.")
 
-# SCRAPE THE PAGE #
+# SCRAPE THE PAGE AND FORMAT DATA #
+    # GO TO TABLE TO SCRAPE DATA
 driver_wait_function(By.XPATH, "//*[@id='post-427949']/div[3]/table[1]", 2)
 table = driver.find_element(By.XPATH, "//*[@id='post-427949']/div[3]/table[1]")
 format_table(table)
@@ -75,6 +77,6 @@ data_frame = pd.DataFrame({
 print(data_frame)
 
 # INACTIVE TIME BEFORE SLEEP AND QUIT OF TEST #
-time.sleep(5)
+time.sleep(10)
 driver.quit()
 # END OF SCRIPT #
