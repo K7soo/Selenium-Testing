@@ -27,7 +27,7 @@ def driver_wait_function(method, tag, type):
     # GET TABLES
 def format_table(format):
     rows = table.find_elements(By.TAG_NAME, "tr")
-    for row in rows[1:]:  # Skip the header row
+    for row in rows[1:]:  
         columns = row.find_elements(By.TAG_NAME, "td")
         if len(columns) == 2:  
             method = columns[0].text
@@ -52,7 +52,7 @@ button_element = driver.find_element(By.XPATH, "//a[contains(text(), 'Sign In')]
 driver_wait_function(By.ID, "luser", 1)
 username_input = driver.find_element(By.ID, "luser").send_keys("kcdominb6fu")
 driver_wait_function(By.ID, "password", 1)
-password_input = driver.find_element(By.ID, "password").send_keys("SirEst0ngPog1!")
+password_input = driver.find_element(By.ID, "password").send_keys("SirEst0ngPog1!") # UNO NAMAN SIR OHH!
 button_element = driver.find_element(By.XPATH, "//*[@id='Login']/button").click()
 
 # FIND SELENIUM TAB #
